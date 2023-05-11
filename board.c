@@ -1,7 +1,7 @@
 /**
  * Assignment: life
- * Name :TODO
- * PID: TODO
+ * Name :Annapurna Saladi :)
+ * PID: A17417895
  * Class: UCSD CSE30-SP21
  *
  */
@@ -28,7 +28,40 @@
  * - return the boards pointer if successfull or NULL ptr otherwise
  */
 boards_t * createBoard(char *initFileName){
-  // TODO: 
+  boards_t * board = (boards_t *) malloc(sizeof(boards_t *));
+  board->gen = 0;
+
+  unsigned int len = 0;
+  char *readbuffer = NULL;
+  int row = 0;
+  int col = 0;
+  int numLine = 0;
+  int numRows = 0;
+  int numCols = 0;
+
+  while (getline(&readbuffer, &len, *initFileName) != -1){
+    char* ptr = readbuffer;
+    if(numLine==0){
+      numRows = atoi(ptr);
+      board->numRows = (size_t)numRows;      
+    }
+    else if(numLine==1){
+      numCols = atoi(ptr);
+      board->numCols = (size_t)numCols;
+      board->bufferA = calloc((numRows*numCols),sizeof(belem));
+      board->bufferB = calloc((numRows*numCols),sizeof(belem));
+    }
+    else{
+      row = atoi(ptr);
+      col = atoi(ptr+2);
+      *(board->bufferA+(row*numCols+col)) = 1;
+      *(board->bufferB+(row*numCols+col)) = 1;
+    }
+    numLine++;
+  }
+  board->currentBuffer = (board->bufferA);
+  (board->nextBuffer) = (board->bufferB);
+  return board;
 }
 
 
@@ -37,21 +70,33 @@ boards_t * createBoard(char *initFileName){
  * delete a board
  */
 void deleteBoard(boards_t **bptrPtr){
-  // TODO:
+  free((*bptrPtr)->bufferA);
+  free((*bptrPtr)->bufferB);
+  free((*bptrPtr)->currentBuffer);
+  free((*bptrPtr)->nextBuffer);
+  /*
+  free((*bptrPtr)->numRows);
+  free((*bptrPtr)->numCols);
+  free((*bptrPtr)->gen);*/
+  *bptrPtr=NULL;
 }
 
 /**
  * set all the belems in both buffers to 0
  */
 void clearBoards(boards_t *self){
-  // TODO:
+  for(int i = 0; (int)i<(int)((self->numCols)*(self->numCols)); i++){
+    *(self->bufferA + i) = 0;
+    *(self->bufferB + i) = 0;
+  }
 }
 
 /**
  * swap the current and next buffers
  */
 void swapBuffers(boards_t *self){
-  // TODO:
+  self->currentBuffer = self->bufferB;
+  self->nextBuffer = self->bufferA;
 }
 
 
@@ -59,6 +104,6 @@ void swapBuffers(boards_t *self){
  * get a cell index
  */
 size_t getIndex(size_t numCols, size_t row, size_t col){
-  // TODO:
+  return (size_t)row*numCols+col;
 }
   
